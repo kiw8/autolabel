@@ -30,11 +30,11 @@ print(f"[Step 0] 디바이스: {device}")
 
 
 # ===== [1. 설정] =====
-WEIGHTS     = "runs/segment/runs/segment/train_v3/weights/best.pt"
+WEIGHTS     = "runs/segment/runs/segment/train_v4/weights/best.pt"
 DATA_YAML   = "/home1/Jwson08/autolabel/dataset/data.yaml"
 VAL_DIR     = Path("/home1/Jwson08/autolabel/dataset/images/val")
-OUTPUT_DIR  = Path("/home1/Jwson08/autolabel/outputs/eval_samples_v3")
-METRICS_TXT = Path("/home1/Jwson08/autolabel/outputs/eval_metrics_v3.txt")
+OUTPUT_DIR  = Path("/home1/Jwson08/autolabel/outputs/eval_samples_v4")
+METRICS_TXT = Path("/home1/Jwson08/autolabel/outputs/eval_metrics_v4.txt")
 NUM_SAMPLES = 20    # 시각화할 val 이미지 수
 CONF_THRESH = 0.25
 

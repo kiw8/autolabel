@@ -29,10 +29,11 @@ flowchart TD
     J --> K{V2 대비 개선?}
     K -- No --> L[V2 유지]
     L --> M["데이터 보강<br/>+667장 → train 12,644"]
-    M --> N["V4 학습<br/>batch64, 4GPU DDP (진행중)"]
+    M --> N["V4 학습<br/>batch64, 4GPU DDP<br/>Mask mAP50=0.922(최고)<br/>mAP50-95=0.7715"]
     N --> O{V2 능가?}
     O -- Yes --> P[elevator_v3.pt 배포]
     O -- No --> L
+    L --> Q["mAP50-95 회복 안 되는<br/>원인 분석 (§7)<br/>→ 추가 학습(V5) 보류"]
 ```
 
 ---
@@ -102,7 +103,7 @@ names:
 | **V1** | `train.py` | `yolo11s-seg.pt` (COCO pretrained) | 100 epoch, batch 32, 2 GPU DDP | mAP50=0.921, mAP50-95=0.785 |
 | **V2** | `train_v2.py` | V1 best.pt | 150 epoch (dog 성능 개선 목적) | mAP50=0.917, mAP50-95=0.781 — **현재 운영 모델** |
 | **V3** | `train_v3.py` | V2 best.pt | `mask_ratio=4→1` (풀 해상도 마스크), batch 8 | mAP50=0.913, mAP50-95=0.774 — V2 대비 개선 없어 V2 유지 |
-| **V4** | `train_v4.py` | V3 best.pt | 데이터 보강(+667장), batch 8→64, 2→4 GPU DDP | (진행 중) |
+| **V4** | `train_v4.py` | V3 best.pt | 데이터 보강(+667장), batch 8→64, 2→4 GPU DDP | mAP50=0.922(최고), mAP50-95=0.7715 — V2 대비 mAP50-95 하락, V2 유지·추가학습 보류 |
 
 ### 실행 (Slurm)
 
@@ -176,7 +177,7 @@ autolabel/
 
 - **V1 → V2**: V1 평가에서 dog 클래스의 mAP50-95(0.687)가 person(0.884) 대비 낮음을 확인 → V1 best.pt에서 +150 epoch 추가 학습 → `elevator_v2.pt`로 배포 (현재 운영 모델)
 - **V2 → V3**: 파이프라인 진단(06-08)에서 `mask_ratio=4`로 인해 polygon 경계가 거칠다는 원인을 확인 → `mask_ratio=1`로 재학습. 결과는 V2 대비 소폭 하락 → **V2 유지** 결정
-- **V3 → V4**: V3가 GPU 메모리를 거의 쓰지 않는 것을 확인(3.65GB/48GB) → batch 8→64, 2→4 GPU로 확대 + GT 667장 보강(train 12,644장)으로 재시도 (진행 중)
-- V4가 V2를 능가하면 §5의 배포 절차에 따라 `elevator_v3.pt`로 교체
+- **V3 → V4**: V3가 GPU 메모리를 거의 쓰지 않는 것을 확인(3.65GB/48GB) → batch 8→64, 2→4 GPU로 확대 + GT 667장 보강(train 12,644장)으로 재시도. 결과: Mask mAP50=0.922(전 버전 중 최고)이지만 Mask mAP50-95=0.7715로 V2(0.781) 대비 소폭 하락
+- **최종 결론**: V2/V3/V4의 학습 곡선을 비교한 결과, mAP50-95(M)이 매 버전 학습 초반(20~54epoch)에 정점을 찍고 이후 100epoch까지 진행하며 오히려 하락하는 동일한 패턴 확인 → 매 버전 `lr0=0.01`로 optimizer/LR을 재시작하는 continual fine-tuning 구조가 원인으로 추정 (상세 분석은 작업 기록 §27.4 참고). **V2(`elevator_v2.pt`) 운영 유지, V4는 배포하지 않으며 추가 학습(V5)은 보류**
 
 > 전체 상세 기록(환경 셋업, SAM3→SAM2 교체, 트러블슈팅 14건 등)은 [`데이터셋 오토라벨링 프로젝트 — 기록.pdf`](./데이터셋%20오토라벨링%20프로젝트%20—%20기록.pdf) 참고.
