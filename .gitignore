@@ -1,0 +1,31 @@
+# 모델 가중치 (NAS 관리: /nas03/models/labeling-project/)
+*.pt
+
+# 학습 결과물
+runs/
+outputs/
+evaluations/
+
+# 로그
+logs/
+*.log
+slurm_*.log
+
+# 데이터셋 (NAS 원본 + 심볼릭 링크, split_dataset.py로 재생성)
+dataset/images/
+dataset/labels/
+dataset/*.cache
+data/
+
+# 데이터 보강용 원본 GT (NAS에 보관, 이미 dataset/에 병합됨)
+incoming/
+
+# 캐시 / 환경
+__pycache__/
+*.pyc
+.cache/
+models/.cache/
+
+# IDE / 세션
+.vscode/
+.claude/

@@ -1,0 +1,11 @@
+# conda 환경: autolabel (Python 3.10)
+# 설치 순서 (README.md 참고):
+#   1) conda create -n autolabel python=3.10 -y && conda activate autolabel
+#   2) pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#   3) pip install -r requirements.txt
+
+numpy==2.2.6
+opencv-python==4.13.0.92
+matplotlib==3.10.9
+pillow==12.2.0
+ultralytics==8.4.56
