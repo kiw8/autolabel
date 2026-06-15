@@ -150,6 +150,17 @@ autolabel/
 └── requirements.txt
 ```
 
+### 핵심 소스 코드
+
+- 🔗 [`scripts/split_dataset.py`](scripts/split_dataset.py) — corner/center 영상을 7:2:1(train/val/test)로 분할하고 `dataset/data.yaml` 생성 (data leakage 방지)
+- 🔗 [`scripts/train.py`](scripts/train.py) — V1 학습: COCO pretrained `yolo11s-seg.pt`에서 시작하는 최초 학습
+- 🔗 [`scripts/train_v2.py`](scripts/train_v2.py) / [`train_v3.py`](scripts/train_v3.py) / [`train_v4.py`](scripts/train_v4.py) — V1 → V4 continual fine-tuning (이전 버전 `best.pt`에서 이어서 학습)
+- 🔗 [`scripts/eval.py`](scripts/eval.py) — val set mAP 정량 평가 + 샘플 시각화, 버전별 결과를 `outputs/`에 저장
+- 🔗 [`scripts/measure_inference_speed.py`](scripts/measure_inference_speed.py) — YOLO / SAM / Hybrid 추론 속도 측정
+- 🔗 [`scripts/diagnose_pipeline.py`](scripts/diagnose_pipeline.py) (+ [`diagnose_yolo.py`](scripts/diagnose_yolo.py), [`diagnose_sam.py`](scripts/diagnose_sam.py), [`diagnose_metrics.py`](scripts/diagnose_metrics.py)) — Hybrid 파이프라인을 YOLO/SAM 구간별로 진단
+- 🔗 [`scripts/slurm_train_v4.sh`](scripts/slurm_train_v4.sh) (+ [`slurm_train_v3.sh`](scripts/slurm_train_v3.sh), [`slurm_train_resume.sh`](scripts/slurm_train_resume.sh)) — gpu-106에서 DDP 학습을 실행하는 Slurm 배치 스크립트
+- 🔗 [`dataset/data.yaml`](dataset/data.yaml) — 데이터셋 경로 및 클래스(person, dog) 정의
+
 ---
 
 ## 🔄 7. 모델/데이터 버전 변화 — 의사결정 흐름
